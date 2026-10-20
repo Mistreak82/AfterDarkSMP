@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AfterDarkSMP - Vote for In-Game Money</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Canvas Confetti for completion effects -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Google Fonts: Minecraft-style Pixel Font + Modern Sans for typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            pixel: ['"Press Start 2P"', 'monospace'],
+          },
+          colors: {
+            darkBg: '#0b0910',
+            cardBg: '#13111a',
+            cardBorder: '#231f30',
+            brandPurple: '#a855f7',
+            brandAmber: '#f59e0b',
+            discordBlurple: '#5865F2'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0910;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #231f30;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b3350;
+    }
+
+    /* Pixel art crisp rendering */
+    .pixelated {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      shape-rendering: crispEdges;
+    }
+
+    /* Text Glows */
+    .glow-purple {
+      text-shadow: 0 0 16px rgba(168, 85, 247, 0.6);
+    }
+    .glow-amber {
+      text-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
+    }
+  </style>
+</head>
+<body class="bg-darkBg text-neutral-100 font-sans min-h-screen relative overflow-x-hidden selection:bg-purple-600 selection:text-white">
+
+  <!-- ================= SPIDERWEB DECORATIVE BACKGROUND OVERLAYS ================= -->
+  <!-- Top-Left Web -->
+  <svg class="pointer-events-none absolute top-0 left-0 w-[320px] sm:w-[500px] opacity-15 text-purple-200 z-0" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="0.8">
+    <path d="M0,0 L200,200 M0,0 L100,200 M0,0 L200,100 M0,0 L0,200 M0,0 L200,0" />
+    <path d="M20,0 Q20,20 0,20 M50,0 Q50,50 0,50 M90,0 Q90,90 0,90 M140,0 Q140,140 0,140 M190,0 Q190,190 0,190" />
+    <path d="M35,35 Q10,60 0,70 M70,70 Q20,110 0,130 M110,110 Q30,170 0,180" />
+  </svg>
+
+  <!-- Bottom-Right Web -->
+  <svg class="pointer-events-none absolute bottom-0 right-0 w-[320px] sm:w-[500px] opacity-15 text-purple-200 z-0 rotate-180" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="0.8">
+    <path d="M0,0 L200,200 M0,0 L100,200 M0,0 L200,100 M0,0 L0,200 M0,0 L200,0" />
+    <path d="M20,0 Q20,20 0,20 M50,0 Q50,50 0,50 M90,0 Q90,90 0,90 M140,0 Q140,140 0,140 M190,0 Q190,190 0,190" />
+  </svg>
+
+  <!-- Deep Purple Ambient Lighting Spheres -->
+  <div class="pointer-events-none fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-purple-900/20 blur-[140px] rounded-full z-0"></div>
+
+
+  <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col min-h-screen justify-between">
+    
+    <!-- ================= NAVBAR ================= -->
+    <header class="flex items-center justify-between py-2 mb-8 flex-wrap gap-4">
+      <!-- Left: Brand Logo & Links -->
+      <div class="flex items-center gap-6 sm:gap-8">
+        <a href="#" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-900 flex items-center justify-center shadow-lg shadow-purple-950/50 group-hover:scale-105 transition-transform border border-purple-400/30">
+            <!-- Dark Crescent / Shard Icon -->
+            <svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.3 2a10 10 0 0 0-1.9 20 10 10 0 0 0 9.1-5.8 1 1 0 0 0-1.1-1.3 8 8 0 1 1-8-8 1 1 0 0 0 1.2-1.2A10 10 0 0 0 12.3 2z"/>
+            </svg>
+          </div>
+          <span class="text-xl font-extrabold tracking-wide text-white group-hover:text-purple-300 transition-colors">AfterDark <span class="text-purple-400">SMP</span></span>
+        </a>
+
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex items-center gap-1 bg-black/40 p-1.5 rounded-full border border-neutral-800/80 backdrop-blur-sm">
+          <a href="#" class="px-4 py-1.5 rounded-full text-sm font-semibold text-neutral-400 hover:text-white transition-colors">Store</a>
+          <a href="#" class="px-4 py-1.5 rounded-full text-sm font-semibold text-amber-300 bg-amber-500/15 border border-amber-500/30 shadow-sm">Vote</a>
+          <a href="#" class="px-4 py-1.5 rounded-full text-sm font-semibold text-neutral-400 hover:text-white transition-colors">Stats</a>
+          <a href="#" class="px-4 py-1.5 rounded-full text-sm font-semibold text-neutral-400 hover:text-white transition-colors">Support</a>
+          <a href="#" class="px-4 py-1.5 rounded-full text-sm font-semibold text-neutral-400 hover:text-white transition-colors">API</a>
+        </nav>
+      </div>
+
+      <!-- Right: Action Buttons -->
+      <div class="flex items-center gap-3">
+        <button onclick="openHowToJoinModal()" class="px-4 py-2 rounded-xl text-sm font-bold bg-neutral-900/90 border border-neutral-700/80 text-neutral-200 hover:bg-neutral-800 hover:text-white transition-all shadow-md flex items-center gap-2">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+          How to Join
+        </button>
+        <a href="https://discord.gg" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl text-sm font-bold bg-discordBlurple hover:bg-indigo-600 text-white transition-all shadow-md flex items-center gap-2 shadow-indigo-950/40">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+          Discord
+        </a>
+      </div>
+    </header>
+
+
+    <!-- ================= MAIN SECTION ================= -->
+    <main class="space-y-8 my-auto">
+      
+      <!-- HERO HEADER -->
+      <div class="text-center space-y-2">
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white">
+          Vote for <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-300 to-indigo-300">AfterDark SMP</span>
+        </h1>
+        <p class="text-neutral-400 text-sm sm:text-base font-medium max-w-lg mx-auto">
+          Your daily votes help bring more players to AfterDarkSMP.
+        </p>
+      </div>
+
+
+      <!-- SINGLE FEATURED REWARD BANNER ($30K EVERY DAY) -->
+      <div class="max-w-3xl mx-auto w-full">
+        <div class="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-purple-600 via-purple-700 to-purple-950 text-white shadow-2xl shadow-purple-950/60 border border-purple-400/40 flex items-center justify-between group">
+          
+          <!-- Background Ambient Glow -->
+          <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-purple-400/20 rounded-full blur-3xl group-hover:bg-purple-400/30 transition-all pointer-events-none"></div>
+
+          <div class="space-y-2 z-10 max-w-[65%]">
+            <!-- Daily in-game money total -->
+            <div class="flex items-center gap-3">
+              <span aria-hidden="true" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-amber-200 bg-amber-400 text-amber-950 flex items-center justify-center text-2xl sm:text-3xl font-black shadow-md">$</span>
+
+              <span class="font-pixel text-2xl sm:text-4xl font-bold tracking-tight text-purple-100 glow-purple">
+                $30K
+              </span>
+            </div>
+
+            <div class="font-black text-xs sm:text-base tracking-widest uppercase text-purple-200">
+              IN-GAME MONEY TOTAL
+            </div>
+            
+            <p class="text-xs sm:text-sm text-purple-200/80 font-medium leading-relaxed">
+              Vote on all 5 sites in one day.
+            </p>
+          </div>
+
+          <!-- Featured currency mark -->
+          <div class="z-10 relative flex-shrink-0">
+            <div aria-hidden="true" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-[6px] border-amber-200 bg-amber-400/20 text-amber-200 flex items-center justify-center text-6xl sm:text-8xl font-black shadow-[0_12px_20px_rgba(0,0,0,0.6)] transform group-hover:scale-105 group-hover:rotate-2 transition-transform duration-300">$</div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ================= USERNAME & PROGRESS TRACKER PANEL ================= -->
+      <div class="bg-cardBg border border-cardBorder rounded-3xl p-5 sm:p-7 shadow-2xl relative">
+        
+        <!-- Header Row -->
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+          <span class="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-neutral-400">
+            VOTES UNTIL DAILY BUNDLE
+          </span>
+          <div class="flex items-center gap-2 bg-neutral-950/80 px-3.5 py-1.5 rounded-full border border-neutral-800">
+            <span id="voteCountText" class="font-pixel text-xs sm:text-sm text-purple-400 font-bold">0/5 TODAY</span>
+            <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          </div>
+        </div>
+
+        <!-- 5-Step Progress Bar -->
+        <div class="relative my-8 px-2">
+          <!-- Background Track -->
+          <div class="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-2.5 bg-neutral-900 rounded-full z-0 border border-neutral-800"></div>
+          <!-- Dynamic Active Track -->
+          <div id="progressBarLine" class="absolute top-1/2 left-0 -translate-y-1/2 h-2.5 bg-gradient-to-r from-purple-600 via-purple-400 to-amber-400 rounded-full z-0 transition-all duration-500 shadow-md shadow-purple-900/50" style="width: 0%;"></div>
+
+          <!-- Nodes -->
+          <div class="relative z-10 flex justify-between items-center">
+            
+            <div class="step-node flex flex-col items-center gap-2" data-step="1">
+              <div class="node-circle w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-neutral-900 border-2 border-neutral-800 flex items-center justify-center font-pixel text-xs sm:text-sm text-neutral-400 transition-all">
+                1
+              </div>
+            </div>
+
+            <div class="step-node flex flex-col items-center gap-2" data-step="2">
+              <div class="node-circle w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-neutral-900 border-2 border-neutral-800 flex items-center justify-center font-pixel text-xs sm:text-sm text-neutral-400 transition-all">
+                2
+              </div>
+            </div>
+
+            <div class="step-node flex flex-col items-center gap-2" data-step="3">
+              <div class="node-circle w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-neutral-900 border-2 border-neutral-800 flex items-center justify-center font-pixel text-xs sm:text-sm text-neutral-400 transition-all">
+                3
+              </div>
+            </div>
+
+            <div class="step-node flex flex-col items-center gap-2" data-step="4">
+              <div class="node-circle w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-neutral-900 border-2 border-neutral-800 flex items-center justify-center font-pixel text-xs sm:text-sm text-neutral-400 transition-all">
+                4
+              </div>
+            </div>
+
+            <div class="step-node flex flex-col items-center gap-2" data-step="5">
+              <div class="node-circle w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-neutral-900 border-2 border-neutral-800 flex items-center justify-center font-pixel text-xs sm:text-sm text-neutral-400 transition-all">
+                5
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Minecraft Username Input Field & Avatar Display -->
+        <div class="mt-6 pt-5 border-t border-neutral-800/80 flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-3 bg-neutral-950/90 px-3.5 py-2 rounded-2xl border border-neutral-800 focus-within:border-purple-500 transition-colors w-full sm:w-auto min-w-[280px]">
+            <!-- Dynamic Minecraft Head -->
+            <img id="playerHead" src="https://mc-heads.net/avatar/Steve/40" alt="Minecraft player head" class="w-8 h-8 rounded-md bg-neutral-900 pixelated border border-neutral-700">
+            
+            <div class="flex-1">
+              <label for="usernameInput" class="block text-[10px] font-bold text-neutral-500 uppercase tracking-wider">In-Game Username</label>
+              <input type="text" id="usernameInput" value="" placeholder="Enter Minecraft name..." maxlength="16" autocomplete="off" class="bg-transparent text-white font-bold text-sm focus:outline-none w-full">
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 text-xs text-neutral-400">
+            <span>Rewards delivered automatically in-game</span>
+            <button onclick="resetVotes()" class="text-xs text-neutral-500 hover:text-red-400 underline transition-colors">Reset Progress</button>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ================= VOTE LINKS GRID (5 CARDS) ================= -->
+      <div class="space-y-3">
+        <h2 class="text-xs font-extrabold uppercase tracking-widest text-neutral-400 px-1">
+          VOTE LINKS
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+          
+          <!-- Card 1: Special Multiplier Card (2X) -->
+          <div id="voteCard-0" class="relative bg-gradient-to-b from-amber-400 to-amber-500 rounded-3xl p-5 text-stone-950 flex flex-col justify-between items-center text-center shadow-lg transition-transform hover:-translate-y-1 border border-amber-300">
+            <!-- 2X Badge -->
+            <span class="absolute top-3 right-3 bg-stone-950 text-amber-400 text-[10px] font-black font-pixel px-2 py-1 rounded-lg">2X</span>
+
+            <!-- Currency Icon -->
+            <div class="my-2">
+              <div aria-hidden="true" class="w-14 h-14 rounded-full border-2 border-amber-200 bg-amber-300 text-amber-950 flex items-center justify-center text-3xl font-black shadow-md">$</div>
+            </div>
+
+            <!-- Reward amount -->
+            <div class="font-pixel text-2xl font-bold my-1 text-stone-950">
+              $10K
+            </div>
+
+            <!-- Link Label & Domain -->
+            <div class="space-y-0.5 mb-4">
+              <div class="text-[11px] font-black uppercase tracking-wider text-stone-900">VOTE LINK #1</div>
+              <div class="text-[11px] font-semibold text-stone-800/80">MinecraftServers.org</div>
+            </div>
+
+            <!-- Vote Button -->
+            <button onclick="handleVote(0, 'https://minecraftservers.org')" class="vote-btn w-full py-2.5 px-4 rounded-xl bg-stone-950 hover:bg-stone-800 text-white font-extrabold text-sm transition-all shadow-md active:scale-95">
+              Vote
+            </button>
+          </div>
+
+
+          <!-- Card 2: Purple Card -->
+          <div id="voteCard-1" class="relative bg-gradient-to-b from-purple-500 to-purple-700 rounded-3xl p-5 text-white flex flex-col justify-between items-center text-center shadow-lg transition-transform hover:-translate-y-1 border border-purple-400/30">
+            <div class="my-2">
+              <div aria-hidden="true" class="w-14 h-14 rounded-full border-2 border-amber-200 bg-amber-300 text-amber-950 flex items-center justify-center text-3xl font-black shadow-md">$</div>
+            </div>
+
+            <div class="font-pixel text-2xl font-bold my-1 text-purple-100">
+              $5K
+            </div>
+
+            <div class="space-y-0.5 mb-4">
+              <div class="text-[11px] font-black uppercase tracking-wider text-purple-200">VOTE LINK #2</div>
+              <div class="text-[11px] font-semibold text-purple-200/70">Minecraft-MP.com</div>
+            </div>
+
+            <button onclick="handleVote(1, 'https://minecraft-mp.com')" class="vote-btn w-full py-2.5 px-4 rounded-xl bg-stone-950/80 hover:bg-stone-950 text-white font-extrabold text-sm transition-all shadow-md active:scale-95 border border-purple-400/20">
+              Vote
+            </button>
+          </div>
+
+
+          <!-- Card 3: Purple Card -->
+          <div id="voteCard-2" class="relative bg-gradient-to-b from-purple-500 to-purple-700 rounded-3xl p-5 text-white flex flex-col justify-between items-center text-center shadow-lg transition-transform hover:-translate-y-1 border border-purple-400/30">
+            <div class="my-2">
+              <div aria-hidden="true" class="w-14 h-14 rounded-full border-2 border-amber-200 bg-amber-300 text-amber-950 flex items-center justify-center text-3xl font-black shadow-md">$</div>
+            </div>
+
+            <div class="font-pixel text-2xl font-bold my-1 text-purple-100">
+              $5K
+            </div>
+
+            <div class="space-y-0.5 mb-4">
+              <div class="text-[11px] font-black uppercase tracking-wider text-purple-200">VOTE LINK #3</div>
+              <div class="text-[11px] font-semibold text-purple-200/70 truncate max-w-[110px]">Minecraft-ServerList.com</div>
+            </div>
+
+            <button onclick="handleVote(2, 'https://minecraft-serverlist.com')" class="vote-btn w-full py-2.5 px-4 rounded-xl bg-stone-950/80 hover:bg-stone-950 text-white font-extrabold text-sm transition-all shadow-md active:scale-95 border border-purple-400/20">
+              Vote
+            </button>
+          </div>
+
+
+          <!-- Card 4: Purple Card -->
+          <div id="voteCard-3" class="relative bg-gradient-to-b from-purple-500 to-purple-700 rounded-3xl p-5 text-white flex flex-col justify-between items-center text-center shadow-lg transition-transform hover:-translate-y-1 border border-purple-400/30">
+            <div class="my-2">
+              <div aria-hidden="true" class="w-14 h-14 rounded-full border-2 border-amber-200 bg-amber-300 text-amber-950 flex items-center justify-center text-3xl font-black shadow-md">$</div>
+            </div>
+
+            <div class="font-pixel text-2xl font-bold my-1 text-purple-100">
+              $5K
+            </div>
+
+            <div class="space-y-0.5 mb-4">
+              <div class="text-[11px] font-black uppercase tracking-wider text-purple-200">VOTE LINK #4</div>
+              <div class="text-[11px] font-semibold text-purple-200/70">TopG.org</div>
+            </div>
+
+            <button onclick="handleVote(3, 'https://topg.org')" class="vote-btn w-full py-2.5 px-4 rounded-xl bg-stone-950/80 hover:bg-stone-950 text-white font-extrabold text-sm transition-all shadow-md active:scale-95 border border-purple-400/20">
+              Vote
+            </button>
+          </div>
+
+
+          <!-- Card 5: Purple Card -->
+          <div id="voteCard-4" class="relative bg-gradient-to-b from-purple-500 to-purple-700 rounded-3xl p-5 text-white flex flex-col justify-between items-center text-center shadow-lg transition-transform hover:-translate-y-1 border border-purple-400/30">
+            <div class="my-2">
+              <div aria-hidden="true" class="w-14 h-14 rounded-full border-2 border-amber-200 bg-amber-300 text-amber-950 flex items-center justify-center text-3xl font-black shadow-md">$</div>
+            </div>
+
+            <div class="font-pixel text-2xl font-bold my-1 text-purple-100">
+              $5K
+            </div>
+
+            <div class="space-y-0.5 mb-4">
+              <div class="text-[11px] font-black uppercase tracking-wider text-purple-200">VOTE LINK #5</div>
+              <div class="text-[11px] font-semibold text-purple-200/70">Minecraft.Buzz</div>
+            </div>
+
+            <button onclick="handleVote(4, 'https://minecraft.buzz')" class="vote-btn w-full py-2.5 px-4 rounded-xl bg-stone-950/80 hover:bg-stone-950 text-white font-extrabold text-sm transition-all shadow-md active:scale-95 border border-purple-400/20">
+              Vote
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="mt-12 pt-6 border-t border-neutral-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
+      <div>
+        &copy; 2026 AfterDarkSMP. All rights reserved. Not affiliated with Mojang AB.
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-neutral-300 transition-colors">Privacy Policy</a>
+        <a href="#" class="hover:text-neutral-300 transition-colors">Terms of Service</a>
+        <a href="#" class="hover:text-neutral-300 transition-colors">Contact Support</a>
+      </div>
+    </footer>
+
+  </div>
+
+
+  <!-- ================= HOW TO JOIN MODAL ================= -->
+  <div id="joinModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-cardBg border border-cardBorder rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl relative transform scale-95 transition-transform duration-300" id="modalContainer">
+      
+      <!-- Close Button -->
+      <button onclick="closeHowToJoinModal()" class="absolute top-5 right-5 text-neutral-400 hover:text-white bg-neutral-900 p-2 rounded-xl transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="space-y-2">
+        <div class="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+        </div>
+        <h3 class="text-2xl font-extrabold text-white">Join AfterDarkSMP</h3>
+        <p class="text-xs text-neutral-400">Copy the server address below and paste it into your Minecraft multiplayer list.</p>
+      </div>
+
+      <!-- Server IP Cards -->
+      <div class="space-y-3">
+        <div class="bg-neutral-950/90 border border-neutral-800 p-4 rounded-2xl flex items-center justify-between">
+          <div>
+            <span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Java Edition IP</span>
+            <span class="font-mono text-sm font-bold text-purple-300">play.afterdarksmp.net</span>
+          </div>
+          <button onclick="copyToClipboard('play.afterdarksmp.net')" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            Copy
+          </button>
+        </div>
+
+        <div class="bg-neutral-950/90 border border-neutral-800 p-4 rounded-2xl flex items-center justify-between">
+          <div>
+            <span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Bedrock Port</span>
+            <span class="font-mono text-sm font-bold text-amber-300">19132</span>
+          </div>
+          <button onclick="copyToClipboard('19132')" class="px-3 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-bold text-xs rounded-xl transition-colors">
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <div class="text-center pt-2">
+        <button onclick="closeHowToJoinModal()" class="w-full py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-sm rounded-2xl transition-colors border border-neutral-800">
+          Done
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= TOAST NOTIFICATION ================= -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-neutral-900 border border-neutral-700 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">✓</div>
+    <span id="toastMsg" class="text-sm font-semibold">Copied to clipboard!</span>
+  </div>
+
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    // App State
+    const state = {
+      username: localStorage.getItem('afterdark_username') || '',
+      votedSites: JSON.parse(localStorage.getItem('afterdark_votes')) || [false, false, false, false, false]
+    };
+
+    // DOM Ready Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      const usernameInput = document.getElementById('usernameInput');
+      usernameInput.value = state.username;
+      updateAvatar(state.username);
+
+      usernameInput.addEventListener('input', (e) => {
+        const newName = e.target.value.trim();
+        state.username = newName;
+        localStorage.setItem('afterdark_username', newName);
+        updateAvatar(newName);
+      });
+
+      renderVoteStates();
+    });
+
+    // Update Player Avatar Head
+    function updateAvatar(username) {
+      const img = document.getElementById('playerHead');
+      img.src = username ? `https://mc-heads.net/avatar/${encodeURIComponent(username)}/40` : 'https://mc-heads.net/avatar/Steve/40';
+    }
+
+    // Handle Individual Vote Action
+    function handleVote(index, url) {
+      const username = document.getElementById('usernameInput').value.trim();
+      if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) {
+        showToast('Enter a valid Minecraft name (3-16 letters, numbers, or underscores).');
+        document.getElementById('usernameInput').focus();
+        return;
+      }
+
+      const voteUrl = new URL(url);
+      voteUrl.searchParams.set('username', username);
+      state.votedSites[index] = true;
+      localStorage.setItem('afterdark_votes', JSON.stringify(state.votedSites));
+
+      window.open(voteUrl.toString(), '_blank');
+      renderVoteStates();
+
+      const totalVoted = state.votedSites.filter(Boolean).length;
+      if (totalVoted === 5) {
+        triggerCompletionCelebration();
+      } else {
+        showToast(`Vote link #${index + 1} registered!`);
+      }
+    }
+
+    // Render Vote Buttons & Progress Nodes
+    function renderVoteStates() {
+      const totalVoted = state.votedSites.filter(Boolean).length;
+
+      // Update Header Vote Counter
+      document.getElementById('voteCountText').innerText = `${totalVoted}/5 TODAY`;
+
+      // Update Progress Bar
+      const percentage = (totalVoted / 5) * 100;
+      document.getElementById('progressBarLine').style.width = `${percentage}%`;
+
+      // Update Step Nodes
+      const stepNodes = document.querySelectorAll('.step-node');
+      stepNodes.forEach((node, i) => {
+        const circle = node.querySelector('.node-circle');
+        if (i < totalVoted) {
+          circle.classList.remove('bg-neutral-900', 'border-neutral-800', 'text-neutral-400');
+          circle.classList.add('bg-gradient-to-br', 'from-purple-500', 'to-purple-700', 'border-purple-400', 'text-white', 'font-bold', 'shadow-lg', 'shadow-purple-900/40');
+          circle.innerHTML = '✓';
+        } else {
+          circle.classList.add('bg-neutral-900', 'border-neutral-800', 'text-neutral-400');
+          circle.classList.remove('bg-gradient-to-br', 'from-purple-500', 'to-purple-700', 'border-purple-400', 'text-white', 'shadow-lg', 'shadow-purple-900/40');
+          circle.innerHTML = i + 1;
+        }
+      });
+
+      // Update Cards Buttons
+      state.votedSites.forEach((isVoted, idx) => {
+        const card = document.getElementById(`voteCard-${idx}`);
+        if (!card) return;
+        const btn = card.querySelector('.vote-btn');
+
+        if (isVoted) {
+          btn.innerHTML = 'VOTED ✓';
+          btn.classList.remove('bg-stone-950', 'hover:bg-stone-800', 'bg-stone-950/80', 'hover:bg-stone-950');
+          btn.classList.add('bg-emerald-600', 'text-white', 'cursor-default');
+        } else {
+          btn.innerHTML = 'Vote';
+          btn.classList.remove('bg-emerald-600', 'cursor-default');
+          if (idx === 0) {
+            btn.classList.add('bg-stone-950', 'hover:bg-stone-800');
+          } else {
+            btn.classList.add('bg-stone-950/80', 'hover:bg-stone-950');
+          }
+        }
+      });
+    }
+
+    // Confetti explosion on 5/5
+    function triggerCompletionCelebration() {
+      showToast('ALL 5 VOTES COMPLETED! $30K IN-GAME MONEY EARNED!');
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 160,
+          spread: 100,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    // Reset daily vote progress
+    function resetVotes() {
+      state.votedSites = [false, false, false, false, false];
+      localStorage.setItem('afterdark_votes', JSON.stringify(state.votedSites));
+      renderVoteStates();
+      showToast('Vote progress reset.');
+    }
+
+    // Modal Control
+    function openHowToJoinModal() {
+      const modal = document.getElementById('joinModal');
+      const container = document.getElementById('modalContainer');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      container.classList.remove('scale-95');
+      container.classList.add('scale-100');
+    }
+
+    function closeHowToJoinModal() {
+      const modal = document.getElementById('joinModal');
+      const container = document.getElementById('modalContainer');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      container.classList.remove('scale-100');
+      container.classList.add('scale-95');
+    }
+
+    // Clipboard Copy Helper
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(`Copied "${text}" to clipboard!`);
+        }).catch(() => {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(`Copied "${text}"!`);
+      } catch (err) {
+        showToast('Failed to copy');
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // Toast Notification
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.innerText = message;
+
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
