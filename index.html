@@ -418,9 +418,9 @@
         <div class="bg-neutral-950/90 border border-neutral-800 p-4 rounded-2xl flex items-center justify-between">
           <div>
             <span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Java Edition IP</span>
-            <span class="font-mono text-sm font-bold text-purple-300">play.afterdarksmp.net</span>
+            <span class="font-mono text-sm font-bold text-purple-300">afterdarksmp.mcsh.gg</span>
           </div>
-          <button onclick="copyToClipboard('play.afterdarksmp.net')" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5">
+          <button onclick="copyToClipboard('afterdarksmp.mcsh.gg')" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             Copy
           </button>
@@ -540,6 +540,8 @@
         const card = document.getElementById(`voteCard-${idx}`);
         if (!card) return;
         const btn = card.querySelector('.vote-btn');
+        card.classList.toggle('grayscale', isVoted);
+        card.classList.toggle('opacity-60', isVoted);
 
         if (isVoted) {
           btn.innerHTML = 'VOTED ✓';
